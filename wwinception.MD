@@ -83,5 +83,69 @@ Based on the above (possible incomplete) list you can understand that this solut
 
 ## Create the Custom channel in Inception
 
+#### wordpress in the 'cloud'
+
+The steps described here are intended for the situation where your wordpress installation is on the internet. Meaning NOT local, behind a firewall etc.
+
+Assumed is that you have installed the wwinception.php, checked the config and run the config check.
+
+- login to inception
+- on th top-right, click on the figure icon,
+- in the select list, choose 'configuration'
+- the Channels admin page will appear
+- choose 'custom channels'
+- press 'Add Channel'
+
+you will now have to fill in some properties for the custom channel:
+
+- name: 'Wordpress-Iframe'
+- target-Name: 'Wordpress'
+- endpoint URL : <your-server>/wordpress/wwinception.php?iframe=1
+- maximum imagesize can be left empty
+
+It is important to notice that after a little while there should be a green 'Check' behind the URL, this indicates that the AWS-SNS handshake was performed and the channel should be able to receive articles
+
+The channel we added will display the published articles in an iframe in wordpress, this will be 100% the look and feel as in the inception editor.
+
+##### non-iframe wordpress
+
+now add a second channel, target-name: 'Wordpress', name: 'Wordpress-native', endpoint URL : <your-server>/wordpress/wwinception.php
+
+again, the custom channel will only work when the green-check is there
+
+
+### If the green check does not appear
+In case the green-check dos not appear behind the URL then there is a problem with the AWS-SNS 'handshake'
+
+This handshake works as follows:
+
+when the custom channel is defined and the endpoint URL is entered 
+the inception server will try to create an AWS-SNS channel.
+
+To validate this channel a specific JSON package is send to the specified URL. In the JSON package there is a 'callback' URL speficied.
+
+The specified endpoint (our wwinception.php) will intercept the handshake package, extract the callback URL and will then (try-to) call this URL to confirm the endpoint.
+
+If it is not possible from your wordpress server to perform a call to the web, then this handshake will fail. So make sure your server is allowed to make calls to other servers/services.
+
+the server that will be called is most likely: https://sns.eu-west-1.amazonaws.com/
+
+this is the [SubscribeURL] in the received 'SubscriptionConfirmation' JSON package.
+
+the logfile written by the wwinception.php should show more information when this fails.
+
+
+### Testing
+- Create or open an article
+- press the 'Publish' button
+- select 'WordPress' as Target
+- select 'Wordpress-native' or 'Wordpress-iframe' in publish-to
+- press the 'Publish' button
+
+In a little while the published article should apear on your wordpress installation.
+
+ 
+
+
 
 
